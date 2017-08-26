@@ -16,4 +16,7 @@ else
 fi
 
 # This is not terribly clean, but ensures we never replace the template file
-cat remote_state.tf.tmpl | sed -e "s/{{STATE_IDENTIFIER}}/${state_identifier}/" > remote_state.tf
+cat remote_state.tf.tmpl | \
+  sed -e "s/{{STATE_IDENTIFIER}}/${state_identifier}/" \
+      -e "s/{{ENV_NAME}}/${environment}/" \
+  > remote_state.tf
