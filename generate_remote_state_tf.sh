@@ -20,3 +20,8 @@ cat remote_state.tf.tmpl | \
   sed -e "s/{{STATE_IDENTIFIER}}/${state_identifier}/" \
       -e "s/{{ENV_NAME}}/${environment}/" \
   > remote_state.tf
+
+# Ensure tfstate file matches remote_state.tf that was generated
+if [[ -f .terraform/terraform.tfstate && "$(grep -c "${state_identifier}" .terraform/terraform.tfstate)" == "0" ]]; then
+  rm -f .terraform/terraform.tfstate
+fi
