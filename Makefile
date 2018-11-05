@@ -1,24 +1,18 @@
 .DEFAULT_GOAL := help
-.PHONY: help test-plan prod-plan test-apply prod-apply tf-fmt
+.PHONY: help plan apply tf-fmt check-config
 
 TERRAFORM_BIN := $(shell which terraform)
 
 help:
-	@echo "Builds ausmith.me site (test or prod)"
+	@echo "Builds ausmith.me site"
 	@echo ""
 	@echo "Targets:"
-	@echo "  test-plan       Runs tf plan against test"
-	@echo "  test-apply      Runs tf apply against test"
-	@echo "  test-teardown   Runs tf destroy against test"
-	@echo "  prod-plan       Runs tf plan against prod"
-	@echo "  prod-apply      Runs tf apply against prod"
+	@echo "  plan            Runs tf plan against prod"
+	@echo "  apply           Runs tf apply against prod"
 	@echo "  check-config    Runs tf formatting and validation across files"
 	@echo "	                 (assumes remote_state.tf is created)"
 
 # remote_state.tf setup
-init-test-remote-state:
-	./generate_remote_state_tf.sh test
-
 init-prod-remote-state:
 	./generate_remote_state_tf.sh prod
 
@@ -46,14 +40,8 @@ tf-destroy:
 	$(TERRAFORM_BIN) destroy
 
 # Meaningful targets to the user
-test-plan: clean-tf-remote-state init-test-remote-state tf-validate tf-init tf-plan
+plan: clean-tf-remote-state init-prod-remote-state tf-validate tf-init tf-plan
 
-test-apply: test-plan tf-apply
-
-test-teardown: clean-tf-remote-state init-test-remote-state tf-destroy
-
-prod-plan: clean-tf-remote-state init-prod-remote-state tf-validate tf-init tf-plan
-
-prod-apply: prod-plan tf-apply
+apply: plan tf-apply
 
 check-config: tf-fmt tf-validate
